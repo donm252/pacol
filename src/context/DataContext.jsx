@@ -79,19 +79,31 @@ export const DataProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('pacol_gallery', JSON.stringify(gallery));
+    try {
+      localStorage.setItem('pacol_gallery', JSON.stringify(gallery));
+    } catch (e) {
+      console.error('Storage quota exceeded. Please use image links or connect Firebase.', e);
+    }
   }, [gallery]);
 
   useEffect(() => {
-    localStorage.setItem('pacol_properties', JSON.stringify(properties));
+    try {
+      localStorage.setItem('pacol_properties', JSON.stringify(properties));
+    } catch (e) {
+      console.error('Storage quota exceeded.', e);
+    }
   }, [properties]);
 
   useEffect(() => {
-    localStorage.setItem('pacol_progress', JSON.stringify(progress));
+    try {
+      localStorage.setItem('pacol_progress', JSON.stringify(progress));
+    } catch (e) {
+      console.error('Storage quota exceeded.', e);
+    }
   }, [progress]);
 
   const addGalleryImage = (image) => {
-    setGallery(prev => [...prev, { ...image, id: Date.now() }]);
+    setGallery(prev => [...prev, { ...image, id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}` }]);
   };
 
   const deleteGalleryImage = (id) => {

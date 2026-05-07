@@ -221,32 +221,88 @@ const AddGalleryForm = ({ onClose, editItem }) => {
     setUploading(true);
     const promises = selectedFiles.map(file => new Promise(resolve => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve({ src: reader.result, type: file.type.startsWith('video/') ? 'video' : 'image' });
+      reader.onloadend = () => resolve({ 
+        src: reader.result, 
+        type: file.type.startsWith('video/') ? 'video' : 'image',
+        id: Math.random().toString(36).substr(2, 9)
+      });
       reader.readAsDataURL(file);
     }));
-    Promise.all(promises).then(res => { setFiles(res); setUploading(false); });
+    Promise.all(promises).then(res => { 
+      setFiles(prev => [...prev, ...res]); 
+      setUploading(false); 
+    });
+  };
+
+  const removeFile = (id) => {
+    setFiles(prev => prev.filter(f => f.id !== id));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (editItem) {
-      updateGalleryImage(editItem.id, { title, category, src: files[0].src, type: files[0].type });
-    } else {
-      files.forEach((f, i) => addGalleryImage({ ...f, title: files.length > 1 ? `${title} ${i+1}` : title, category, desc: '' }));
+    try {
+      if (editItem) {
+        updateGalleryImage(editItem.id, { title, category, src: files[0]?.src, type: files[0]?.type });
+      } else {
+        if (files.length === 0) return alert('Please select at least one file');
+        files.forEach((f, i) => addGalleryImage({ 
+          src: f.src, 
+          type: f.type, 
+          title: files.length > 1 ? `${title} ${i+1}` : title, 
+          category, 
+          desc: '' 
+        }));
+      }
+      onClose();
+    } catch (err) {
+      alert("Error: Your browser storage is full. Please try uploading smaller images or fewer images at a time.");
     }
-    onClose();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {!editItem && <input type="file" multiple accept="image/*,video/*" onChange={handleFileChange} className="w-full p-2 border border-dashed rounded-xl" />}
-      {editItem && <div className="text-xs text-slate-400 mb-2 italic">Image cannot be changed in edit mode yet. Delete and re-add to change image.</div>}
-      <input type="text" placeholder="Title" required value={title} onChange={e => setTitle(e.target.value)} className="w-full p-3 bg-slate-50 rounded-xl" />
-      <select value={category} onChange={e => setCategory(e.target.value)} className="w-full p-3 bg-slate-50 rounded-xl">
-        <option value="finished">Finished</option>
-        <option value="construction">Construction</option>
+      {!editItem && (
+        <div className="space-y-4">
+          <label className="block w-full border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center cursor-pointer hover:border-secondary transition-colors">
+            <input type="file" multiple accept="image/*,video/*" onChange={handleFileChange} className="hidden" />
+            <Upload className="mx-auto text-slate-300 mb-2" size={32} />
+            <span className="text-slate-500 font-medium">Click to select images or videos</span>
+            <p className="text-xs text-slate-400 mt-1">You can select multiple files at once</p>
+          </label>
+          
+          {files.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-50 rounded-xl">
+              {files.map((file, i) => (
+                <div key={file.id || i} className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 group">
+                  {file.type === 'video' ? (
+                    <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+                      <Play className="text-white/50" size={16} />
+                    </div>
+                  ) : (
+                    <img src={file.src} className="w-full h-full object-cover" alt="" />
+                  )}
+                  <button 
+                    type="button"
+                    onClick={() => removeFile(file.id)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={10} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {editItem && <div className="text-xs text-slate-400 mb-2 italic">Media content cannot be changed in edit mode. Delete and re-add to change file.</div>}
+      <input type="text" placeholder="General Title (e.g., Living Room)" required value={title} onChange={e => setTitle(e.target.value)} className="w-full p-3 bg-slate-50 rounded-xl focus:ring-2 focus:ring-secondary/20 outline-none border border-transparent focus:border-secondary transition-all" />
+      <select value={category} onChange={e => setCategory(e.target.value)} className="w-full p-3 bg-slate-50 rounded-xl outline-none border border-transparent focus:border-secondary transition-all">
+        <option value="finished">Finished Building</option>
+        <option value="construction">Construction Process</option>
       </select>
-      <button type="submit" disabled={uploading} className="w-full btn-primary py-3">{editItem ? 'Update Item' : 'Save Items'}</button>
+      <button type="submit" disabled={uploading} className="w-full btn-primary py-4 text-lg shadow-lg shadow-secondary/20">
+        {uploading ? 'Processing Files...' : editItem ? 'Update Item' : `Save ${files.length} Item${files.length !== 1 ? 's' : ''}`}
+      </button>
     </form>
   );
 };
