@@ -23,7 +23,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary relative overflow-hidden">
-      {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary rounded-full blur-[120px]"></div>
@@ -38,7 +37,7 @@ const Login = () => {
           <div className="text-center mb-10">
             <img src="/p.png" alt="Pacol Properties" className="h-12 mx-auto mb-6" />
             <h2 className="text-3xl font-serif text-white font-bold">Admin Portal</h2>
-            <p className="text-slate-400 mt-2">Sign in to manage your properties</p>
+            <p className="text-slate-400 mt-2">Sign in with your local credentials</p>
           </div>
 
           {error && (
@@ -93,12 +92,7 @@ const Login = () => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full btn-primary py-4 mt-4"
-            >
-              Sign In
-            </button>
+            <button type="submit" className="w-full btn-primary py-4 mt-4">Sign In</button>
           </form>
         </div>
       </motion.div>

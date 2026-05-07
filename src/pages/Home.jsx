@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion';
-import { Building2, Shield, BatteryCharging, Droplets, MapPin, Download } from 'lucide-react';
+import { Building2, Shield, BatteryCharging, Droplets, MapPin, Download, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 
 const Home = () => {
+  const { gallery } = useData();
+  const finishedImages = gallery.filter(img => img.category === 'finished').slice(0, 6);
+
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -18,7 +22,8 @@ const Home = () => {
           <div className="absolute inset-0 bg-primary/70 backdrop-blur-[2px]"></div>
         </div>
         
-        <div className="container-custom relative z-10 text-center text-white mt-20">
+        {/* Added mt-32 for mobile to avoid nav overlap */}
+        <div className="container-custom relative z-10 text-center text-white mt-32 md:mt-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -38,8 +43,8 @@ const Home = () => {
               <Link to="/contact" className="btn-primary w-full sm:w-auto">
                 Schedule a Tour
               </Link>
-              <Link to="/virtual-tour" className="btn-outline border-white text-white hover:border-secondary w-full sm:w-auto">
-                Virtual Tour
+              <Link to="/gallery" className="btn-outline border-white text-white hover:border-secondary w-full sm:w-auto">
+                View Gallery
               </Link>
             </div>
           </motion.div>
@@ -104,8 +109,39 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Gallery Preview Section */}
+      <section className="py-32 bg-white">
+        <div className="container-custom">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div className="max-w-2xl">
+              <h2 className="text-4xl font-serif text-primary mb-4">Gallery Showcase</h2>
+              <div className="w-20 h-1 bg-secondary mb-6"></div>
+              <p className="text-lg text-slate-600">Take a look at the exquisite interiors and architectural details of CUOMO Luxury Apartments.</p>
+            </div>
+            <Link to="/gallery" className="flex items-center text-secondary font-bold hover:translate-x-2 transition-transform group">
+              VIEW ALL PHOTOS <ArrowRight className="ml-2" size={20} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {finishedImages.map((img, i) => (
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                key={i} 
+                className="aspect-square rounded-2xl overflow-hidden shadow-lg group relative"
+              >
+                <img src={img.src} alt={img.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                   <Link to="/gallery" className="btn-primary py-2 px-6 text-sm">View Details</Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Details Section with Asymmetric Layout */}
-      <section className="py-32 bg-white overflow-hidden">
+      <section className="py-32 bg-light overflow-hidden">
         <div className="container-custom">
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <motion.div 

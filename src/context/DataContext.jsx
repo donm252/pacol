@@ -7,6 +7,79 @@ export const useData = () => useContext(DataContext);
 export const DataProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');
   
+  const [gallery, setGallery] = useState(() => {
+    const saved = localStorage.getItem('pacol_gallery');
+    const isOldVersion = saved && !saved.includes('img_1866');
+    
+    if (isOldVersion) {
+      localStorage.removeItem('pacol_gallery');
+      return getDefaultGallery();
+    }
+    return saved ? JSON.parse(saved) : getDefaultGallery();
+  });
+
+  function getDefaultGallery() {
+    const imageIds = [
+      '1810', '1811', '1812', '1813', '1814', '1815', '1816', '1817', '1818', '1819',
+      '1820', '1821', '1822', '1823', '1824', '1827', '1828', '1829', '1830', '1831',
+      '1832', '1833', '1839', '1841', '1842', '1843', '1861', '1862', '1864', '1865', '1866'
+    ];
+    
+    const newGallery = imageIds.map((id, index) => ({
+      id: index + 100,
+      src: `/gallery/img_${id}.jpg`,
+      title: `CUOMO Luxury Interior ${index + 1}`,
+      category: 'finished',
+      type: 'image',
+      desc: 'Premium finishes at CUOMO Luxury Apartments.'
+    }));
+
+    // Add back the construction ones if needed, but the user asked to remove demo images.
+    // I'll leave it as just the finished ones for now.
+    return newGallery;
+  }
+
+  const [properties, setProperties] = useState(() => {
+    const saved = localStorage.getItem('pacol_properties');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 1,
+        title: "CUOMO Luxury Apartments",
+        location: "9b Emma Abimbola Cole, Lekki Phase 1, Lagos",
+        price: "Contact for Price",
+        image: "/b.png",
+        beds: 2,
+        baths: 2,
+        area: "120sqm",
+        tag: "For Sale"
+      }
+    ];
+  });
+
+  const [progress, setProgress] = useState(() => {
+    const saved = localStorage.getItem('pacol_progress');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, date: 'January 2025', title: 'Groundbreaking Ceremony', desc: "The official start of the CUOMO LUXURY APARTMENTS project.", status: 'completed' },
+      { id: 2, date: 'April 2024', title: 'Foundation Work Completed', desc: "Concrete pouring and foundation work finished.", status: 'completed' },
+      { id: 3, date: 'June 2025', title: 'Structural Framework', desc: "Steel framework completed.", status: 'completed' },
+      { id: 4, date: 'Coming Soon', title: 'Exterior Walls & Roofing', desc: "Exterior walls completed and roofing installed.", status: 'planned' },
+    ];
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('pacol_gallery', JSON.stringify(gallery));
+  }, [gallery]);
+
+  useEffect(() => {
+    localStorage.setItem('pacol_properties', JSON.stringify(properties));
+  }, [properties]);
+
+  useEffect(() => {
+    localStorage.setItem('pacol_progress', JSON.stringify(progress));
+  }, [progress]);
+
   const login = (user, pass) => {
     if (user === 'admin' && pass === 'admin123') {
       localStorage.setItem('isAuthenticated', 'true');
@@ -21,89 +94,8 @@ export const DataProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
-  const [gallery, setGallery] = useState(() => {
-    const saved = localStorage.getItem('pacol_gallery');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, src: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', title: 'Modern Architecture', desc: 'Premium exterior finishes', category: 'finished', type: 'image' },
-      { id: 2, src: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', title: 'Elegant Living Room', desc: 'Spacious and well-lit spaces', category: 'finished', type: 'image' },
-      { id: 3, src: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', title: 'Fitted Kitchen', desc: 'Top-tier appliances', category: 'finished', type: 'image' },
-      { id: 4, src: '/IMG1.JPG', title: 'Site Preparation', desc: 'Initial groundwork', category: 'construction', type: 'image' },
-      { id: 5, src: '/IMG2.JPG', title: 'Foundation', desc: 'Solid structural base', category: 'construction', type: 'image' },
-      { id: 6, src: '/IMG3.jpeg', title: 'Framework', desc: 'Raising the levels', category: 'construction', type: 'image' },
-      { id: 7, src: '/1.jpeg', title: 'Level 1 Progress', desc: 'Columns and framing', category: 'construction', type: 'image' },
-      { id: 8, src: '/2.jpeg', title: 'Level 2 Progress', desc: 'Slab casting', category: 'construction', type: 'image' },
-      { id: 9, src: '/3.jpeg', title: 'Blockwork', desc: 'Partitioning units', category: 'construction', type: 'image' },
-      { id: 10, src: '/4.jpeg', title: 'Interior Framing', desc: 'Detailing phases', category: 'construction', type: 'image' },
-      { id: 11, src: '/5.jpeg', title: 'Roofing Phase', desc: 'Structural enclosure', category: 'construction', type: 'image' },
-      { id: 12, src: '/6.jpeg', title: 'Finishing Touches', desc: 'Exterior refinement', category: 'construction', type: 'image' },
-    ];
-  });
-
-  const [properties, setProperties] = useState(() => {
-    const saved = localStorage.getItem('pacol_properties');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 1,
-        title: "CUOMO Luxury Apartments",
-        location: "Lekki Phase 1, Lagos",
-        price: "Contact for Price",
-        image: "/b.png",
-        beds: 2,
-        baths: 2,
-        area: "120sqm",
-        tag: "For Sale"
-      },
-      {
-        id: 2,
-        title: "The Vertex Penthouse",
-        location: "Victoria Island, Lagos",
-        price: "₦450,000,000",
-        image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        beds: 4,
-        baths: 4,
-        area: "350sqm",
-        tag: "Off Plan"
-      }
-    ];
-  });
-
-  const [progress, setProgress] = useState(() => {
-    const saved = localStorage.getItem('pacol_progress');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, date: 'January 2025', title: 'Groundbreaking Ceremony', desc: "The official start of the CUOMO LUXURY APARTMENTS project. Site preparation and excavation work began.", status: 'completed' },
-      { id: 2, date: 'April 2024', title: 'Foundation Work Completed', desc: "Concrete pouring and foundation work finished. The building's base is now solid and ready for vertical construction.", status: 'completed' },
-      { id: 3, date: 'June 2025', title: 'Structural Framework', desc: "Steel framework completed. The building's structure is now visible with multiple floors taking shape.", status: 'completed' },
-      { id: 4, date: 'Coming Soon', title: 'Exterior Walls & Roofing', desc: "Exterior walls completed and roofing installed. The building is now weather-tight and interior work begins.", status: 'planned' },
-      { id: 5, date: 'Coming Soon', title: 'Interior Rough-Ins', desc: "Plumbing, electrical, and HVAC systems installed. Walls are framed and ready for finishing.", status: 'planned' },
-    ];
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('pacol_gallery', JSON.stringify(gallery));
-    } catch (e) {
-      console.error('Storage quota exceeded. Please use image links or connect Firebase.', e);
-    }
-  }, [gallery]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('pacol_properties', JSON.stringify(properties));
-    } catch (e) {
-      console.error('Storage quota exceeded.', e);
-    }
-  }, [properties]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('pacol_progress', JSON.stringify(progress));
-    } catch (e) {
-      console.error('Storage quota exceeded.', e);
-    }
-  }, [progress]);
-
   const addGalleryImage = (image) => {
-    setGallery(prev => [...prev, { ...image, id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}` }]);
+    setGallery(prev => [...prev, { ...image, id: Date.now() }]);
   };
 
   const deleteGalleryImage = (id) => {
@@ -143,7 +135,8 @@ export const DataProvider = ({ children }) => {
       isAuthenticated, login, logout,
       gallery, addGalleryImage, deleteGalleryImage, updateGalleryImage,
       properties, addProperty, deleteProperty, updateProperty,
-      progress, addProgressItem, deleteProgressItem, updateProgressItem
+      progress, addProgressItem, deleteProgressItem, updateProgressItem,
+      loading
     }}>
       {children}
     </DataContext.Provider>

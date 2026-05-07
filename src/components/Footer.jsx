@@ -32,7 +32,7 @@ const Footer = () => {
               Quick Links
             </h3>
             <ul className="space-y-3">
-              {['Home', 'Gallery', 'Progress', 'Virtual Tour', 'About Us', 'FAQ', 'Contact'].map((item) => (
+              {['Home', 'Gallery', 'Progress', 'About Us', 'FAQ', 'Contact'].map((item) => (
                 <li key={item}>
                   <Link to={`/${item === 'Home' ? '' : item.toLowerCase().replace(' ', '-')}`} className="hover:text-secondary hover:translate-x-2 transition-all duration-300 inline-block">
                     {item}
