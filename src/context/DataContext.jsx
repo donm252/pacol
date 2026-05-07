@@ -5,6 +5,22 @@ const DataContext = createContext();
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');
+  
+  const login = (user, pass) => {
+    if (user === 'admin' && pass === 'admin123') {
+      localStorage.setItem('isAuthenticated', 'true');
+      setIsAuthenticated(true);
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('isAuthenticated');
+    setIsAuthenticated(false);
+  };
+
   const [gallery, setGallery] = useState(() => {
     const saved = localStorage.getItem('pacol_gallery');
     return saved ? JSON.parse(saved) : [
@@ -112,6 +128,7 @@ export const DataProvider = ({ children }) => {
 
   return (
     <DataContext.Provider value={{ 
+      isAuthenticated, login, logout,
       gallery, addGalleryImage, deleteGalleryImage, updateGalleryImage,
       properties, addProperty, deleteProperty, updateProperty,
       progress, addProgressItem, deleteProgressItem, updateProgressItem

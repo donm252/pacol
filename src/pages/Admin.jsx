@@ -10,13 +10,14 @@ const Admin = () => {
   const [editItem, setEditItem] = useState(null);
   const navigate = useNavigate();
   const { 
+    logout,
     gallery, deleteGalleryImage, updateGalleryImage,
     properties, deleteProperty, updateProperty,
     progress, deleteProgressItem, updateProgressItem 
   } = useData();
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    logout();
     navigate('/login');
   };
 

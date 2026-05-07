@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 const Login = () => {
+  const { login } = useData();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -12,9 +14,7 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Default credentials for now
-    if (username === 'admin' && password === 'admin123') {
-      localStorage.setItem('isAuthenticated', 'true');
+    if (login(username, password)) {
       navigate('/admin');
     } else {
       setError('Invalid username or password');

@@ -76,6 +76,8 @@ const Footer = () => {
                 <Mail size={20} className="mr-3 text-secondary shrink-0" />
                 <span>info@pacolproperties.com</span>
               </li>
+              <li><Link to="/contact" className="hover:text-secondary transition-colors">Contact Us</Link></li>
+              <li><Link to="/login" className="hover:text-secondary transition-colors">Admin Portal</Link></li>
             </ul>
           </div>
         </div>
